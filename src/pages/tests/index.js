@@ -58,7 +58,7 @@ class Todos extends React.Component {
           <div className="container">
             <div className="btn-action text-left">
               <Link to={'/new-test'}>
-                <button className="cuzbtn btn-default">New Test</button>
+                <button className="cuzbtn btn-outline-primary">New Test</button>
               </Link>
             </div>
             <br />

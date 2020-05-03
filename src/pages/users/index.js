@@ -72,7 +72,7 @@ class Users extends React.Component {
           <div className="container">
             <div className="btn-action text-left">
               <Link to={'/new-user'}>
-                <button className="cuzbtn btn-default">Add new user</button>
+                <button className="cuzbtn btn-outline-primary">Add new user</button>
               </Link>
             </div>
             <br />

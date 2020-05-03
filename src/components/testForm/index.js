@@ -21,6 +21,10 @@ class ExampleForm extends React.Component {
     this.onChangeQuestion = this.onChangeQuestion.bind(this);
     this.createNewTodos = this.createNewTodos.bind(this);
     this.updateExample = this.updateExample.bind(this);
+
+    this.createNewItemTodo = this.createNewItemTodo.bind(this);
+    this.updateItemTodo = this.updateItemTodo.bind(this);
+    this.moreQuestion = this.moreQuestion.bind(this);
   }
 
   onChangeName(e) {
@@ -59,9 +63,6 @@ class ExampleForm extends React.Component {
       this.props.history.push(`/edit-test/${response.data.id}/items`)
       window.location.reload();
     })
-
-
-
   }
 
   updateExample() {
@@ -77,6 +78,88 @@ class ExampleForm extends React.Component {
       this.props.history.push('/todos');
       window.location.reload();
     })
+  }
+
+  moreQuestion() {
+    const token = localStorage.getItem('token');
+    const config = {
+      headers: {
+        Authorization: token,
+      }
+    }
+
+    const data = {
+      "question": "...",
+      "correct": "...",
+      "answers": ["...", "...", "..."],
+      "name": "...",
+      "done": false
+    }
+    axios.post(`${todos_api}/${this.props.match.params.id}/items`, data, config).then(() => {
+      alert('Successfully !');
+      this.props.history.push(`/edit-test/${this.props.match.params.id}/items`)
+      window.location.reload();
+    })
+  }
+
+  createNewItemTodo() {
+    const token = localStorage.getItem('token');
+    const config = {
+      headers: {
+        Authorization: token,
+      }
+    }
+
+    const data = {
+      "question": "Which company has created the Surface Pro?",
+      "correct": "Bill Gate",
+      "answers": ["Steve Jobs", "Bill Gate", "Elon Musk"],
+      "name": "Example Test 3",
+      "done": false
+    }
+    axios.post(`${todos_api}/${this.props.match.params.id}/items`, data, config).then(() => {
+      alert('Successfully !');
+      this.props.history.push(`/edit-test/${this.props.match.params.id}/items`)
+      window.location.reload();
+    })
+  }
+
+  updateItemTodo(item) {
+    const token = localStorage.getItem('token');
+    const config = {
+      headers: {
+        Authorization: token,
+      }
+    }
+
+    const data = {
+      "question": "Which company has created the Surface Pro? UPDATE",
+      "correct": "Bill Gate",
+      "answers": ["Steve Jobs", "Bill Gate", "Elon Musk"],
+      "name": "Example Test 3",
+      "done": false
+    }
+    axios.put(`${todos_api}/${this.props.match.params.id}/items/${item.id}`, data, config).then(() => {
+      alert('Successfully !');
+      this.props.history.push(`/edit-test/${this.props.match.params.id}/items`)
+      window.location.reload();
+    })
+  }
+
+  removeItemTodo(item) {
+    const token = localStorage.getItem('token');
+
+    const config = {
+      headers: {
+        Authorization: token,
+      }
+    }
+
+    if (window.confirm(`Are you sure to remove - ${item.name}  ? `)) {
+      axios.delete(`${todos_api}/${this.props.match.params.id}/items/${item.id}`, config).then(() => {
+        window.location.reload();
+      })
+    }
   }
 
   componentDidMount() {
@@ -104,7 +187,7 @@ class ExampleForm extends React.Component {
         // window.location.reload();
 
         const test = response.data;
-        
+
         this.setState({
           title: test.title,
           description: test.description,
@@ -143,6 +226,8 @@ class ExampleForm extends React.Component {
                 <option value="1">01</option>
                 <option value="2">02</option>
                 <option value="3">03</option>
+                <option value="4">04</option>
+                <option value="5">05</option>
               </select>
             </div>
           </form>
@@ -161,7 +246,7 @@ class ExampleForm extends React.Component {
           {
             this.state.add_question ?
               <div className="text-left">
-                <h3><strong>QUESTIONS: [{this.state.total_questions}]</strong></h3>
+                <h3><strong>You need to add total [ {this.state.total_questions} ] question(s) for this example:</strong></h3>
                 <br />
                 {
                   dataList > 0 ?
@@ -185,53 +270,51 @@ class ExampleForm extends React.Component {
                             <div>Correct answer: <strong> <input className="form-control" type="text" value={item.correct} /></strong></div>
                             <hr />
                           </div>
-                          <div className="btn-action text-left">
+                          <div className="btn-action text-left float-right">
                             {
-                              !this.props.match.params.id ? <button className="cuzbtn btn-default" onClick={this.createNewTodos}>Save</button> : <button className="cuzbtn btn-warning" onClick={this.updateExample}>Update</button>
+                              !this.props.match.params.id ? <button className="cuzbtn btn-default" onClick={() => this.createNewItemTodo(item)}>Save</button> : <button className="cuzbtn btn-warning" onClick={() => this.updateItemTodo(item)}>Edit</button>
                             }
-                            <button className="cuzbtn btn-secondary" onClick={() => this.props.history.push('/todos')}>Cancel</button>
+                            <button className="cuzbtn btn-danger" onClick={() => this.removeItemTodo(item)}>Remove</button>
                           </div>
+                          <br />
+                          <br />
                           <br />
                           <br />
                         </div>
                       )
                     })
                     : <div>
-                      {
-                        [...Array(this.state.total_questions)].map(() => {
-                          return (
-                            <div>
-                              <div className="ans-question">
-                                <div className="form-group">
-                                  Question:
+                      <div className="ans-question">
+                        <div className="form-group">
+                          Question: [ 1 ]
                                   <br />
-                                  <h5><strong><input className="form-control" type="text" placeholder="Question" /></strong></h5>
-                                </div>
-                                <div className="form-group">
-                                  <ol>
-                                    <li><input className="form-control" type="text" placeholder="answers ..." /><br /></li>
-                                    <li><input className="form-control" type="text" placeholder="answers ..." /><br /></li>
-                                    <li><input className="form-control" type="text" placeholder="answers ..." /><br /></li>
-                                  </ol>
-                                </div>
-                                <div>Correct answer: <strong> <input className="form-control" type="text" placeholder="correct answer" /></strong></div>
-                                <hr />
-                              </div>
-                              <div className="btn-action text-left">
-                                {
-                                  !this.props.match.params.id ? <button className="cuzbtn btn-default" onClick={this.createNewTodos}>Save</button> : <button className="cuzbtn btn-warning" onClick={this.updateExample}>Update</button>
-                                }
-                                <button className="cuzbtn btn-secondary" onClick={() => this.props.history.push('/todos')}>Cancel</button>
-                              </div>
-                              <br />
-                              <br />
-                            </div>
-                          )
-                        })
-                      }
+                          <h5><strong><input className="form-control" type="text" placeholder="Question" /></strong></h5>
+                        </div>
+                        <div className="form-group">
+                          <ol>
+                            <li><input className="form-control" type="text" placeholder="answers ..." /><br /></li>
+                            <li><input className="form-control" type="text" placeholder="answers ..." /><br /></li>
+                            <li><input className="form-control" type="text" placeholder="answers ..." /><br /></li>
+                          </ol>
+                        </div>
+                        <div>Correct answer: <strong> <input className="form-control" type="text" placeholder="correct answer" /></strong></div>
+                        <hr />
+                      </div>
+                      <div className="btn-action text-right float-right">
+                        <button className="cuzbtn btn-default" onClick={() => this.createNewItemTodo()}>Create</button>
+                      </div>
+                      <br />
+                      <br />
                     </div>
                 }
-              </div> 
+                <div className="text-center">
+                  {this.state.total_questions !== dataList ?
+                    <button className="cuzbtn more btn-success" onClick={() => this.moreQuestion()}>More Question</button>
+                    : null
+                  }
+
+                </div>
+              </div>
               :
               null
           }
