@@ -145,7 +145,7 @@ class App extends React.Component {
             </ul>
             <ul>
               <li>
-                <button className="btn btn-light" onClick={this.handleLogout}> Logout</button>
+                <button className="btn btn-secondary" onClick={this.handleLogout}> Logout</button>
               </li>
             </ul>
           </nav>

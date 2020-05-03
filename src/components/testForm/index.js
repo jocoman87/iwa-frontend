@@ -13,7 +13,20 @@ class ExampleForm extends React.Component {
       description: null,
       total_questions: 0,
       add_question: false,
-      answers_list: []
+      answers_list: [],
+      questionCR: null,
+      answerCR: [
+        {
+          answer01: null,
+        },
+        {
+          answer02: null,
+        },
+        {
+          answer03: null,
+        }
+      ],
+      correctCR: null
     }
 
     this.onChangeName = this.onChangeName.bind(this);
@@ -25,6 +38,12 @@ class ExampleForm extends React.Component {
     this.createNewItemTodo = this.createNewItemTodo.bind(this);
     this.updateItemTodo = this.updateItemTodo.bind(this);
     this.moreQuestion = this.moreQuestion.bind(this);
+
+    this.onChangeQuestionCR = this.onChangeQuestionCR.bind(this);
+    this.onChangeAnswerCR_1 = this.onChangeAnswerCR_1.bind(this);
+    this.onChangeAnswerCR_2 = this.onChangeAnswerCR_2.bind(this);
+    this.onChangeAnswerCR_3 = this.onChangeAnswerCR_3.bind(this);
+    this.onChangeCorrectCR = this.onChangeCorrectCR.bind(this);
   }
 
   onChangeName(e) {
@@ -89,20 +108,25 @@ class ExampleForm extends React.Component {
     }
 
     const data = {
-      "question": "...",
-      "correct": "...",
-      "answers": ["...", "...", "..."],
-      "name": "...",
+      "question": null,
+      "correct": null,
+      "answers": null,
+      "name": "Example",
       "done": false
     }
     axios.post(`${todos_api}/${this.props.match.params.id}/items`, data, config).then(() => {
-      alert('Successfully !');
       this.props.history.push(`/edit-test/${this.props.match.params.id}/items`)
       window.location.reload();
     })
   }
 
   createNewItemTodo() {
+    let answers01 = localStorage.getItem('answers01')
+    let answers02 = localStorage.getItem('answers02')
+    let answers03 = localStorage.getItem('answers03')
+
+    const dataAnserts = [answers01, answers02, answers03]
+
     const token = localStorage.getItem('token');
     const config = {
       headers: {
@@ -111,10 +135,10 @@ class ExampleForm extends React.Component {
     }
 
     const data = {
-      "question": "Which company has created the Surface Pro?",
-      "correct": "Bill Gate",
-      "answers": ["Steve Jobs", "Bill Gate", "Elon Musk"],
-      "name": "Example Test 3",
+      "question": this.state.questionCR,
+      "correct": this.state.correctCR,
+      "answers": dataAnserts,
+      "name": "Example",
       "done": false
     }
     axios.post(`${todos_api}/${this.props.match.params.id}/items`, data, config).then(() => {
@@ -125,6 +149,12 @@ class ExampleForm extends React.Component {
   }
 
   updateItemTodo(item) {
+    let answers01 = localStorage.getItem('answers01')
+    let answers02 = localStorage.getItem('answers02')
+    let answers03 = localStorage.getItem('answers03')
+
+    const dataAnserts = [answers01, answers02, answers03]
+
     const token = localStorage.getItem('token');
     const config = {
       headers: {
@@ -133,10 +163,10 @@ class ExampleForm extends React.Component {
     }
 
     const data = {
-      "question": "Which company has created the Surface Pro? UPDATE",
-      "correct": "Bill Gate",
-      "answers": ["Steve Jobs", "Bill Gate", "Elon Musk"],
-      "name": "Example Test 3",
+      "question": this.state.questionCR,
+      "correct": this.state.correctCR,
+      "answers": dataAnserts,
+      "name": "Example",
       "done": false
     }
     axios.put(`${todos_api}/${this.props.match.params.id}/items/${item.id}`, data, config).then(() => {
@@ -198,6 +228,30 @@ class ExampleForm extends React.Component {
     }
   }
 
+  onChangeQuestionCR(e) {
+    this.setState({
+      questionCR: e.target.value
+    })
+  }
+
+  onChangeAnswerCR_1(e) {
+    localStorage.setItem('answers01', e.target.value);
+  }
+
+  onChangeAnswerCR_2(e) {
+    localStorage.setItem('answers02', e.target.value);
+  }
+
+  onChangeAnswerCR_3(e) {
+    localStorage.setItem('answers03', e.target.value);
+  }
+
+  onChangeCorrectCR(e) {
+    this.setState({
+      correctCR: e.target.value
+    })
+  }
+
   render() {
     const dataList = this.state.answers_list.length;
     return (
@@ -213,11 +267,11 @@ class ExampleForm extends React.Component {
           <form className="text-left">
             <div className="form-group">
               <label htmlFor="exampleFormControlInput0"><strong>Title</strong></label>
-              <input type="text" className="form-control" id="exampleFormControlInput0" value={this.state.title} placeholder="Title" onChange={this.onChangeName} />
+              <input type="text" className="form-control" id="exampleFormControlInput0" value={this.state.title || 'Your Title'} placeholder="Title" onChange={this.onChangeName} />
             </div>
             <div className="form-group">
               <label htmlFor="exampleFormControlInput1"><strong>Description</strong></label>
-              <textarea className="form-control" id="exampleFormControlInput1" placeholder="" value={this.state.description} onChange={this.onChangeDescription} />
+              <textarea className="form-control" id="exampleFormControlInput1" placeholder="Description" value={this.state.description || 'Your Description'} onChange={this.onChangeDescription} />
             </div>
             <div className="form-group">
               <label htmlFor="exampleFormControlSelect3"><strong>Questions</strong></label>
@@ -235,7 +289,7 @@ class ExampleForm extends React.Component {
           < br />
           <div className="btn-action text-left">
             {
-              !this.props.match.params.id ? <button className="cuzbtn btn-default" onClick={this.createNewTodos}>Save</button> : <button className="cuzbtn btn-warning" onClick={this.updateExample}>Update</button>
+              !this.props.match.params.id ? <button className="cuzbtn btn-default" onClick={this.createNewTodos}>Create</button> : <button className="cuzbtn btn-warning" onClick={this.updateExample}>Update</button>
             }
             <button className="cuzbtn btn-secondary" onClick={() => this.props.history.push('/todos')}>Back</button>
           </div>
@@ -251,28 +305,39 @@ class ExampleForm extends React.Component {
                 {
                   dataList > 0 ?
                     this.state.answers_list.map((item, i) => {
-                      const newObject = JSON.parse(item.answers);
+                      let newObject = JSON.parse(item.answers);
+
+                      if(newObject === null) {
+                        newObject =  [null, null, null]
+                      }
+
+
+                      console.log(newObject)
+
                       return (
-                        <div>
-                          <div key={i} className="ans-question">
+                        <div key={i} >
+                          <div className="ans-question">
                             <div className="form-group">
                               Question: [ {i + 1} ]
-                            <br />
-                              <h5><strong><input className="form-control" type="text" value={item.question} /></strong></h5>
+                              <br />
+                              <br />
+                              <h5><strong><input className="form-control" type="text" value={item.question} onChange={this.onChangeQuestionCR} /></strong></h5>
                             </div>
                             <div className="form-group">
                               <ol>
-                                {
-                                  newObject.map(item => <li><input className="form-control" type="text" placeholder="" value={item} /><br /></li>)
-                                }
+                              <ol>
+                                <li><input className="form-control" type="text" value={newObject[0]} placeholder="answers ..." onChange={this.onChangeAnswerCR_1} /><br /></li>
+                                <li><input className="form-control" type="text" value={newObject[1]} placeholder="answers ..." onChange={this.onChangeAnswerCR_2} /><br /></li>
+                                <li><input className="form-control" type="text" value={newObject[2]} placeholder="answers ..." onChange={this.onChangeAnswerCR_3} /><br /></li>
+                              </ol>
                               </ol>
                             </div>
-                            <div>Correct answer: <strong> <input className="form-control" type="text" value={item.correct} /></strong></div>
+                            <div>Correct answer: <strong> <input className="form-control" type="text" value={item.correct} onChange={this.onChangeCorrectCR} /></strong></div>
                             <hr />
                           </div>
                           <div className="btn-action text-left float-right">
                             {
-                              !this.props.match.params.id ? <button className="cuzbtn btn-default" onClick={() => this.createNewItemTodo(item)}>Save</button> : <button className="cuzbtn btn-warning" onClick={() => this.updateItemTodo(item)}>Edit</button>
+                              !this.props.match.params.id ? <button className="cuzbtn btn-default" onClick={() => this.createNewItemTodo(item)}>Save</button> : <button className="cuzbtn btn-success" onClick={() => this.updateItemTodo(item)}>Save</button>
                             }
                             <button className="cuzbtn btn-danger" onClick={() => this.removeItemTodo(item)}>Remove</button>
                           </div>
@@ -287,17 +352,18 @@ class ExampleForm extends React.Component {
                       <div className="ans-question">
                         <div className="form-group">
                           Question: [ 1 ]
-                                  <br />
-                          <h5><strong><input className="form-control" type="text" placeholder="Question" /></strong></h5>
+                          <br />
+                          <br />
+                          <h5><strong><input className="form-control" type="text" placeholder="Question" onChange={this.onChangeQuestionCR} /></strong></h5>
                         </div>
                         <div className="form-group">
                           <ol>
-                            <li><input className="form-control" type="text" placeholder="answers ..." /><br /></li>
-                            <li><input className="form-control" type="text" placeholder="answers ..." /><br /></li>
-                            <li><input className="form-control" type="text" placeholder="answers ..." /><br /></li>
+                            <li><input className="form-control" type="text" value={this.state.answerCR.answer01} placeholder="answers ..." onChange={this.onChangeAnswerCR_1} /><br /></li>
+                            <li><input className="form-control" type="text" value={this.state.answerCR.answer02} placeholder="answers ..." onChange={this.onChangeAnswerCR_2} /><br /></li>
+                            <li><input className="form-control" type="text" value={this.state.answerCR.answer03} placeholder="answers ..." onChange={this.onChangeAnswerCR_3} /><br /></li>
                           </ol>
                         </div>
-                        <div>Correct answer: <strong> <input className="form-control" type="text" placeholder="correct answer" /></strong></div>
+                        <div>Correct answer: <strong> <input className="form-control" type="text" onChange={this.onChangeCorrectCR} placeholder="correct answer" /></strong></div>
                         <hr />
                       </div>
                       <div className="btn-action text-right float-right">
@@ -309,8 +375,8 @@ class ExampleForm extends React.Component {
                 }
                 <div className="text-center">
                   {this.state.total_questions !== dataList ?
-                    <button className="cuzbtn more btn-success" onClick={() => this.moreQuestion()}>More Question</button>
-                    : null
+                    <button className="cuzbtn more btn-info" onClick={() => this.moreQuestion()}>More Question</button>
+                    : <button className="cuzbtn btn-secondary" onClick={() => this.props.history.push('/todos')}>Back</button>
                   }
 
                 </div>
