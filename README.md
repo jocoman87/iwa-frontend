@@ -1,5 +1,23 @@
-#iwa-frontend
+# iwa-frontend
 -------------------------
+
+API IWA Assigment Development
+Find the iwa-api.json file in the Documents folder Of API project. Import into Postman and can use the API at port: 3000
+
+### Tech stack
+Node v12.13.0
+npm 6.12.0
+
+React ^16.13.1
+
+### Setting up local development
+* Install Node
+* Run `npm install` or `yarn install` it's up to you.
+* you app will run on port 3000 as defaul but in case API taken port 3000. Project will be run on another port. Maybe `:3001`
+
+### Development
+....
+
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
