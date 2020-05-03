@@ -1,0 +1,36 @@
+@import '../../commons/styles/variable.scss';
+
+#user-page {
+  color: rgb(50, 50, 50);
+  padding: 35px 20px;
+  font-family: 'Proxima Medium';
+  position: relative;
+  top: 100px;
+
+  .cuzbtn {
+    width: 250px;
+    padding: 10px 50px;
+
+    font-size: 15px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    
+    border-radius: 5px;
+    border: 2px solid rgba(50, 50, 50, 0.2);
+    
+    transition: all 0.2s linear;
+
+    cursor: pointer;
+
+    &:hover {
+      background: rgb(240, 54, 124);
+      color: #ffffff;
+    }
+  }
+
+  .btn-action {
+    button {
+      margin: 10px -10px;
+    }
+  }
+}
